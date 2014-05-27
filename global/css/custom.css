@@ -1,0 +1,278 @@
+/* 
+CUSTOM STYLESHEET
+---------------------
+
+Instructions:
+
+Add your custom styles here instead of style.css so it 
+is easier to update the theme. Simply copy an existing 
+style from style.css to this file, and modify it to 
+your liking.
+
+*/
+
+/*.search_home{
+    width:285px;
+    height:410px;
+    position:absolute;
+    top:10px;
+    right:0;
+    padding:8px 10px 8px 29px;
+    z-index:99;
+}
+
+.search_home .form_search{
+	padding: 0px 0px 0px 15px;
+}*/
+
+.tf-seek-select-form-item-slider .select_styled,
+.selectField.tf-seek-select-form-item-slider .select_styled{
+	width:140px
+}
+
+.search_col_full{
+    height:155px;
+    width: 300px;
+    text-align: right;
+}
+
+.search_col_full > .row{
+    padding: 3px;
+}
+
+.search_col_full > .search_title{
+    padding: 0px;
+    padding-bottom: 10px;
+}
+
+.search_title{
+    padding-top: 6px;
+    padding-bottom: 10px;
+}
+
+
+.boton-rigth{
+    padding-right: 50px;
+}
+
+.aviso{
+    padding-top: 10px;
+    padding-bottom: 10px;
+    text-align: center;
+    background-color: #333;
+    color: #CCC;
+    font-family: Helvetica;
+    z-index: 99999;
+}
+
+
+.close {
+    color: #CCC;
+    position: relative;
+    top: 10px;
+    right: 20px;
+    line-height: 5px;
+    text-align: right;
+    font-weight: bold;
+
+}
+
+.close:hover {
+    color: #FFF;
+    cursor: pointer;
+}
+
+.div-3d{
+    display: block; 
+    float: left;
+}
+
+.div-3d-clear{
+    clear:both;
+    height: 30px;
+}
+
+.list_hab_3d{
+    color: #000;
+}
+
+.list_hab_3d:hover{
+    cursor:pointer;
+    color: #000;
+    font-weight: bold;
+}
+
+.entry{
+    text-align: justify;
+}
+
+#searcher{
+    z-index: 9999;
+}
+
+.back-button-map{
+    position: absolute;
+    top: -4px;
+    left: 83px;
+}
+
+.floater{
+    position: fixed;
+    /*float: left;*/
+    top: 12px;
+    left: 20px;
+}
+
+.searchMapa{
+    background:url(../images/search_background.jpg) repeat;
+    width:280px;
+    height:100%;
+    position:absolute;
+    top:0px;
+    left:0px;
+    padding:2px 2px 0px 20px;
+    z-index:9999;
+}
+
+
+.contenido-searchMapa{
+    text-align: center;
+}
+
+.body-map{
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.full-map{
+    width: 100%;
+    min-height: 400px;
+    max-height: 60000px;
+    height: 100%;
+}
+
+#footer-map{
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+
+.infoWindowContent{
+    width: 200px;
+    text-align: justify;
+    vertical-align: top;
+}
+
+.LabelError{
+    color: #900000;
+}
+
+/*topmenu{
+    width: 650px;
+}*/
+
+/*.topmenu{
+	height:45px;
+	width:540px;
+	padding:40px 0 0 0;
+	margin:0;
+	float:left
+}*/
+
+.MessageBackground{
+    width: 100%;
+    height: 100%;
+    z-index: 1100;
+    position: fixed;
+    background: #000;
+    opacity: 0.8;
+    display: block;
+}
+
+.bodyMessage-content{
+    position: fixed;
+    top: 10%;
+    left: 50%;
+    z-index: 2100;
+    width: 560px;
+    margin-left: -280px;
+    background-color: #ffffff;
+    border: 1px solid #999;
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    border-radius: 6px;
+    outline: none;
+    -webkit-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+    -moz-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+    -webkit-background-clip: padding-box;
+    -moz-background-clip: padding-box;
+    background-clip: padding-box;
+    display: block;
+    padding: 20px;
+}
+
+.boton-cerrar{
+    text-align: right;
+}
+
+.boton-eliminar-mensaje{
+    padding: 10px 10px 10px 10px;
+    border:1px solid #25729a; -webkit-border-radius: 3px; -moz-border-radius: 3px;border-radius: 3px;font-size:12px;font-family:arial, helvetica, sans-serif; padding: 10px 10px 10px 10px; text-decoration:none; display:inline-block;text-shadow: -1px -1px 0 rgba(0,0,0,0.3);font-weight:bold; color: #FFFFFF;
+    background-color: #3093c7; background-image: -webkit-gradient(linear, left top, left bottom, from(#3093c7), to(#1c5a85));
+    background-image: -webkit-linear-gradient(top, #3093c7, #1c5a85);
+    background-image: -moz-linear-gradient(top, #3093c7, #1c5a85);
+    background-image: -ms-linear-gradient(top, #3093c7, #1c5a85);
+    background-image: -o-linear-gradient(top, #3093c7, #1c5a85);
+    background-image: linear-gradient(to bottom, #3093c7, #1c5a85);filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#3093c7, endColorstr=#1c5a85);
+}
+
+.boton-eliminar-mensaje:hover{
+    border:1px solid #1c5675;
+    background-color: #26759e; background-image: -webkit-gradient(linear, left top, left bottom, from(#26759e), to(#133d5b));
+    background-image: -webkit-linear-gradient(top, #26759e, #133d5b);
+    background-image: -moz-linear-gradient(top, #26759e, #133d5b);
+    background-image: -ms-linear-gradient(top, #26759e, #133d5b);
+    background-image: -o-linear-gradient(top, #26759e, #133d5b);
+    background-image: linear-gradient(to bottom, #26759e, #133d5b);filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#26759e, endColorstr=#133d5b);
+}
+.fondoMensajes{
+
+    border:1px solid #d7dada; -webkit-border-radius: 3px; -moz-border-radius: 3px;border-radius: 3px;font-size:12px;font-family:arial, helvetica, sans-serif; padding: 10px 10px 10px 10px; text-decoration:none; display:inline-block;text-shadow: -1px -1px 0 rgba(0,0,0,0.3);font-weight:bold; color: #FFFFFF;
+    background-color: #f4f5f5; background-image: -webkit-gradient(linear, left top, left bottom, from(#f4f5f5), to(#dfdddd));
+    background-image: -webkit-linear-gradient(top, #f4f5f5, #dfdddd);
+    background-image: -moz-linear-gradient(top, #f4f5f5, #dfdddd);
+    background-image: -ms-linear-gradient(top, #f4f5f5, #dfdddd);
+    background-image: -o-linear-gradient(top, #f4f5f5, #dfdddd);
+    background-image: linear-gradient(to bottom, #f4f5f5, #dfdddd);filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#f4f5f5, endColorstr=#dfdddd);
+}
+
+.datosMensaje{
+    width:90%;
+    border:1px solid #616261; -webkit-border-radius: 3px; -moz-border-radius: 3px;border-radius: 3px;font-size:12px;font-family:arial, helvetica, sans-serif; padding: 10px 10px 10px 10px; text-decoration:none; display:inline-block;text-shadow: -1px -1px 0 rgba(0,0,0,0.3);font-weight:bold; color: #FFFFFF;
+    background-color: #7d7e7d; background-image: -webkit-gradient(linear, left top, left bottom, from(#7d7e7d), to(#0e0e0e));
+    background-image: -webkit-linear-gradient(top, #7d7e7d, #0e0e0e);
+    background-image: -moz-linear-gradient(top, #7d7e7d, #0e0e0e);
+    background-image: -ms-linear-gradient(top, #7d7e7d, #0e0e0e);
+    background-image: -o-linear-gradient(top, #7d7e7d, #0e0e0e);
+    background-image: linear-gradient(to bottom, #7d7e7d, #0e0e0e);filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#7d7e7d, endColorstr=#0e0e0e);
+}
+
+.oculto{
+    display: none;
+}
+
+
+.class-boton-ocultar{
+    position: absolute;
+    top: -2px;
+    right: -29px;
+}
+
+.class-boton-ocultar:hover{
+    cursor: pointer;
+}

@@ -1,0 +1,742 @@
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
+
+CREATE SCHEMA IF NOT EXISTS `inmovitek` DEFAULT CHARACTER SET latin1 COLLATE latin1_spanish_ci ;
+USE `inmovitek` ;
+
+-- -----------------------------------------------------
+-- Table `inmovitek`.`ct_licencia`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `inmovitek`.`ct_licencia` ;
+
+CREATE  TABLE IF NOT EXISTS `inmovitek`.`ct_licencia` (
+  `licencia` VARCHAR(30) NOT NULL ,
+  `activacion` TINYINT(1) NOT NULL ,
+  `numero_usuarios` INT NOT NULL ,
+  `usuarios_activos` INT NOT NULL ,
+  `fecha_activacion` DATE NOT NULL ,
+  `fecha_termino` DATE NOT NULL ,
+  PRIMARY KEY (`licencia`) ,
+  INDEX `INDEX_TERMINO` (`fecha_termino` ASC) )
+DEFAULT CHARACTER SET = latin1
+COLLATE = latin1_spanish_ci;
+
+
+-- -----------------------------------------------------
+-- Table `inmovitek`.`ct_inmobiliaria`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `inmovitek`.`ct_inmobiliaria` ;
+
+CREATE  TABLE IF NOT EXISTS `inmovitek`.`ct_inmobiliaria` (
+  `id_inmobiliaria` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `identificador` VARCHAR(50) NULL ,
+  `nombre` VARCHAR(100) NOT NULL ,
+  `licencia` VARCHAR(30) NOT NULL ,
+  `directorio_archivos` VARCHAR(250) NULL ,
+  `url_logo` VARCHAR(250) NULL ,
+  `inmobiliaria_activa` TINYINT(1) NOT NULL ,
+  PRIMARY KEY (`id_inmobiliaria`) ,
+  INDEX `FK_INMOBILIARIA_LICENCIA` (`licencia` ASC) ,
+  UNIQUE INDEX `INDEX_IDENTIFICADOR` (`identificador` ASC) ,
+  CONSTRAINT `fk_licencia`
+    FOREIGN KEY (`licencia` )
+    REFERENCES `inmovitek`.`ct_licencia` (`licencia` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+AUTO_INCREMENT = 1
+DEFAULT CHARACTER SET = latin1
+COLLATE = latin1_spanish_ci;
+
+
+-- -----------------------------------------------------
+-- Table `inmovitek`.`ct_usuario`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `inmovitek`.`ct_usuario` ;
+
+CREATE  TABLE IF NOT EXISTS `inmovitek`.`ct_usuario` (
+  `id_usuario` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `nombre_usuario` VARCHAR(60) NULL ,
+  `id_inmobiliaria` INT UNSIGNED NULL ,
+  `nombres` VARCHAR(50) NULL ,
+  `apellido_p` VARCHAR(40) NULL ,
+  `apellido_m` VARCHAR(40) NULL ,
+  `correo` VARCHAR(40) NOT NULL ,
+  `password` VARCHAR(80) NOT NULL ,
+  `telefono_casa` VARCHAR(30) NULL DEFAULT NULL ,
+  `telefono_celular` VARCHAR(30) NULL DEFAULT NULL ,
+  `fecha_alta` TIMESTAMP NOT NULL ,
+  `fecha_nacimiento` DATE NULL ,
+  `usuario_activo` TINYINT(1) NOT NULL ,
+  PRIMARY KEY (`id_usuario`) ,
+  INDEX `FK_USUARIO_INMOBILIARIA` (`id_inmobiliaria` ASC) ,
+  UNIQUE INDEX `INDEX_NOMBRE_USUARIO` (`nombre_usuario` ASC) ,
+  INDEX `INDEX_CORREO` (`correo` ASC) ,
+  INDEX `INDEX_LOGIN_USUARIO` (`nombre_usuario` ASC, `password` ASC) ,
+  INDEX `INDEX_LOGIN_CORREO` (`correo` ASC, `password` ASC) ,
+  CONSTRAINT `fk_inmobiliaria`
+    FOREIGN KEY (`id_inmobiliaria` )
+    REFERENCES `inmovitek`.`ct_inmobiliaria` (`id_inmobiliaria` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+AUTO_INCREMENT = 1
+DEFAULT CHARACTER SET = latin1
+COLLATE = latin1_spanish_ci;
+
+
+-- -----------------------------------------------------
+-- Table `inmovitek`.`ht_agenda_usuario`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `inmovitek`.`ht_agenda_usuario` ;
+
+CREATE  TABLE IF NOT EXISTS `inmovitek`.`ht_agenda_usuario` (
+  `id_registro` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `id_usuario` INT UNSIGNED NOT NULL ,
+  `titulo` VARCHAR(200) NOT NULL ,
+  `detalles` LONGTEXT NOT NULL ,
+  `fecha_inicio` DATETIME NOT NULL ,
+  `fecha_termino` DATETIME NULL ,
+  PRIMARY KEY (`id_registro`) ,
+  INDEX `FK_EVENTO_USUARIO` (`id_usuario` ASC) ,
+  CONSTRAINT `fk_usuario_agenda`
+    FOREIGN KEY (`id_usuario` )
+    REFERENCES `inmovitek`.`ct_usuario` (`id_usuario` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+AUTO_INCREMENT = 1
+DEFAULT CHARACTER SET = latin1
+COLLATE = latin1_spanish_ci
+PACK_KEYS = 1;
+
+
+-- -----------------------------------------------------
+-- Table `inmovitek`.`ct_tipo_inmueble`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `inmovitek`.`ct_tipo_inmueble` ;
+
+CREATE  TABLE IF NOT EXISTS `inmovitek`.`ct_tipo_inmueble` (
+  `id_tipo_inmueble` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `tipo_inmueble` VARCHAR(60) NOT NULL ,
+  PRIMARY KEY (`id_tipo_inmueble`) )
+AUTO_INCREMENT = 1
+DEFAULT CHARACTER SET = latin1
+COLLATE = latin1_spanish_ci;
+
+
+-- -----------------------------------------------------
+-- Table `inmovitek`.`ct_cliente`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `inmovitek`.`ct_cliente` ;
+
+CREATE  TABLE IF NOT EXISTS `inmovitek`.`ct_cliente` (
+  `id_cliente` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `id_usuario` INT UNSIGNED NOT NULL ,
+  `nombre` VARCHAR(250) NOT NULL ,
+  `correo` VARCHAR(45) NULL ,
+  `telefono` VARCHAR(80) NULL ,
+  `horario_llamada` VARCHAR(140) NULL DEFAULT NULL ,
+  `anotaciones` LONGTEXT NULL DEFAULT NULL ,
+  `fecha_alta` DATE NOT NULL ,
+  PRIMARY KEY (`id_cliente`) ,
+  INDEX `FK_CLIENTE_INMOBILIARIA` (`id_usuario` ASC) ,
+  CONSTRAINT `fk_inmobiliaria`
+    FOREIGN KEY (`id_usuario` )
+    REFERENCES `inmovitek`.`ct_usuario` (`id_usuario` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+AUTO_INCREMENT = 1
+DEFAULT CHARACTER SET = latin1
+COLLATE = latin1_spanish_ci;
+
+
+-- -----------------------------------------------------
+-- Table `inmovitek`.`ct_inmueble`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `inmovitek`.`ct_inmueble` ;
+
+CREATE  TABLE IF NOT EXISTS `inmovitek`.`ct_inmueble` (
+  `id_inmueble` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `fecha_registro` DATE NOT NULL ,
+  `id_tipo_inmueble` INT UNSIGNED NOT NULL ,
+  `metros_cuadrados` FLOAT NOT NULL ,
+  `num_recamaras` INT NOT NULL ,
+  `num_sanitarios` INT NOT NULL ,
+  `alberca` TINYINT(1) NOT NULL ,
+  `cochera` TINYINT(1) NOT NULL ,
+  `num_autos_cochera` INT NULL ,
+  `num_plantas` INT NOT NULL ,
+  `precio` FLOAT NOT NULL ,
+  `detalles` LONGTEXT NULL ,
+  `venta_renta` TINYINT(1) NOT NULL COMMENT 'Inmueble en venta = 1\nInmueble en renta = 2' ,
+  `id_usuario` INT UNSIGNED NOT NULL ,
+  `vendida_rentada` TINYINT(1) NOT NULL COMMENT 'Vendida = 1\nRentada = 1' ,
+  `id_propietario` INT UNSIGNED NULL ,
+  `activo` TINYINT(1) NOT NULL ,
+  PRIMARY KEY (`id_inmueble`) ,
+  INDEX `FK_INMUEBLE_TIPO` (`id_tipo_inmueble` ASC) ,
+  INDEX `FK_INMUEBLE_INMOBILIARIA` (`id_usuario` ASC) ,
+  INDEX `FK_INMUEBLE_PROPIETARIO` (`id_propietario` ASC) ,
+  CONSTRAINT `fk_tipo_propiedad`
+    FOREIGN KEY (`id_tipo_inmueble` )
+    REFERENCES `inmovitek`.`ct_tipo_inmueble` (`id_tipo_inmueble` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_usuario`
+    FOREIGN KEY (`id_usuario` )
+    REFERENCES `inmovitek`.`ct_usuario` (`id_usuario` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_propietario`
+    FOREIGN KEY (`id_propietario` )
+    REFERENCES `inmovitek`.`ct_cliente` (`id_cliente` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+AUTO_INCREMENT = 6
+DEFAULT CHARACTER SET = latin1
+COLLATE = latin1_spanish_ci;
+
+
+-- -----------------------------------------------------
+-- Table `inmovitek`.`ct_renta`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `inmovitek`.`ct_renta` ;
+
+CREATE  TABLE IF NOT EXISTS `inmovitek`.`ct_renta` (
+  `id_renta` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `id_inmueble` INT UNSIGNED NOT NULL ,
+  `cliente_alquila` INT UNSIGNED NOT NULL ,
+  `fecha_registro` DATE NOT NULL ,
+  `periodo_renta` INT NOT NULL ,
+  `precio_renta` FLOAT NOT NULL ,
+  `proximo_cobro` DATE NULL DEFAULT NULL ,
+  `anotaciones` LONGTEXT NULL DEFAULT NULL ,
+  PRIMARY KEY (`id_renta`) ,
+  INDEX `FK_RENTA_INMUEBLE` (`id_inmueble` ASC) ,
+  INDEX `FK_RENTA_CLIENTE` (`cliente_alquila` ASC) ,
+  CONSTRAINT `fk_renta_inmueble`
+    FOREIGN KEY (`id_inmueble` )
+    REFERENCES `inmovitek`.`ct_inmueble` (`id_inmueble` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_cliente_alquila`
+    FOREIGN KEY (`cliente_alquila` )
+    REFERENCES `inmovitek`.`ct_cliente` (`id_cliente` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+AUTO_INCREMENT = 1
+DEFAULT CHARACTER SET = latin1
+COLLATE = latin1_spanish_ci;
+
+
+-- -----------------------------------------------------
+-- Table `inmovitek`.`ct_estado`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `inmovitek`.`ct_estado` ;
+
+CREATE  TABLE IF NOT EXISTS `inmovitek`.`ct_estado` (
+  `id_estado` INT UNSIGNED NOT NULL ,
+  `nombre` VARCHAR(100) NOT NULL ,
+  PRIMARY KEY (`id_estado`) )
+DEFAULT CHARACTER SET = latin1
+COLLATE = latin1_spanish_ci;
+
+
+-- -----------------------------------------------------
+-- Table `inmovitek`.`ct_perfil_cliente`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `inmovitek`.`ct_perfil_cliente` ;
+
+CREATE  TABLE IF NOT EXISTS `inmovitek`.`ct_perfil_cliente` (
+  `id_cliente` INT UNSIGNED NOT NULL ,
+  `id_estado_busca_inmueble` INT UNSIGNED NOT NULL ,
+  `id_tipo_inmueble` INT UNSIGNED NOT NULL ,
+  `no_habitaciones_min` INT NOT NULL ,
+  `no_habitaciones_max` INT NOT NULL ,
+  `alberca` TINYINT(1) NOT NULL ,
+  `no_sanitarios_min` INT NOT NULL ,
+  `no_sanitarios_max` INT NOT NULL ,
+  `cochera` TINYINT(1) NOT NULL ,
+  `no_plantas` INT NOT NULL ,
+  `rango_precio_min` INT NOT NULL ,
+  `rango_precio_max` INT NOT NULL ,
+  `compra_renta` TINYINT(1) NOT NULL ,
+  PRIMARY KEY (`id_cliente`) ,
+  INDEX `FK_COMPRA_ESTADO` (`id_estado_busca_inmueble` ASC) ,
+  INDEX `FK_COMPRA_TIPO` (`id_tipo_inmueble` ASC) ,
+  INDEX `FK_CLIENTE_COMPRA` (`id_cliente` ASC) ,
+  CONSTRAINT `fk_estado`
+    FOREIGN KEY (`id_estado_busca_inmueble` )
+    REFERENCES `inmovitek`.`ct_estado` (`id_estado` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_tipo`
+    FOREIGN KEY (`id_tipo_inmueble` )
+    REFERENCES `inmovitek`.`ct_tipo_inmueble` (`id_tipo_inmueble` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_cliente`
+    FOREIGN KEY (`id_cliente` )
+    REFERENCES `inmovitek`.`ct_cliente` (`id_cliente` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+DEFAULT CHARACTER SET = latin1
+COLLATE = latin1_spanish_ci;
+
+
+-- -----------------------------------------------------
+-- Table `inmovitek`.`ct_direccion_inmueble`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `inmovitek`.`ct_direccion_inmueble` ;
+
+CREATE  TABLE IF NOT EXISTS `inmovitek`.`ct_direccion_inmueble` (
+  `id_inmueble` INT UNSIGNED NOT NULL ,
+  `id_estado` INT UNSIGNED NOT NULL ,
+  `calle_no` VARCHAR(200) NOT NULL ,
+  `colonia` VARCHAR(100) NOT NULL ,
+  `municipio` VARCHAR(100) NOT NULL ,
+  `cp` INT(6) NOT NULL ,
+  `latitud` DOUBLE NOT NULL ,
+  `longitud` DOUBLE NOT NULL ,
+  `domicilio_completo` VARCHAR(250) NULL ,
+  PRIMARY KEY (`id_inmueble`) ,
+  INDEX `FK_DIRECCION_INMUEBLE` (`id_inmueble` ASC) ,
+  INDEX `FK_DIRECCION_ESTADO` (`id_estado` ASC) ,
+  INDEX `INDEX_LATITUD` (`latitud` ASC) ,
+  INDEX `INDEX_LONGITUD` (`longitud` ASC) ,
+  INDEX `INDEX_CP` (`cp` ASC) ,
+  INDEX `INDEX_MUNICIPIO` (`municipio` ASC) ,
+  CONSTRAINT `fk_estado`
+    FOREIGN KEY (`id_estado` )
+    REFERENCES `inmovitek`.`ct_estado` (`id_estado` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_inmueble`
+    FOREIGN KEY (`id_inmueble` )
+    REFERENCES `inmovitek`.`ct_inmueble` (`id_inmueble` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+DEFAULT CHARACTER SET = latin1
+COLLATE = latin1_spanish_ci;
+
+
+-- -----------------------------------------------------
+-- Table `inmovitek`.`ct_foto_inmueble`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `inmovitek`.`ct_foto_inmueble` ;
+
+CREATE  TABLE IF NOT EXISTS `inmovitek`.`ct_foto_inmueble` (
+  `id_foto` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `id_inmueble` INT UNSIGNED NOT NULL ,
+  `url_imagen` VARCHAR(250) NOT NULL ,
+  PRIMARY KEY (`id_foto`) ,
+  INDEX `FK_FOTO_INMUEBLE` (`id_inmueble` ASC) ,
+  CONSTRAINT `fk_inmueble`
+    FOREIGN KEY (`id_inmueble` )
+    REFERENCES `inmovitek`.`ct_inmueble` (`id_inmueble` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+AUTO_INCREMENT = 1
+DEFAULT CHARACTER SET = latin1
+COLLATE = latin1_spanish_ci;
+
+
+-- -----------------------------------------------------
+-- Table `inmovitek`.`rl_inmueble_ofrecido_cliente`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `inmovitek`.`rl_inmueble_ofrecido_cliente` ;
+
+CREATE  TABLE IF NOT EXISTS `inmovitek`.`rl_inmueble_ofrecido_cliente` (
+  `id_cliente` INT UNSIGNED NOT NULL ,
+  `id_inmueble` INT UNSIGNED NOT NULL ,
+  PRIMARY KEY (`id_cliente`, `id_inmueble`) ,
+  INDEX `CLIENTE_RECHAZA_INMUEBLE` (`id_cliente` ASC) ,
+  INDEX `INMUEBLE_RECHAZADO_CLIENTE` (`id_inmueble` ASC) ,
+  CONSTRAINT `fk_cliente`
+    FOREIGN KEY (`id_cliente` )
+    REFERENCES `inmovitek`.`ct_cliente` (`id_cliente` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_inmueble`
+    FOREIGN KEY (`id_inmueble` )
+    REFERENCES `inmovitek`.`ct_inmueble` (`id_inmueble` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+DEFAULT CHARACTER SET = latin1
+COLLATE = latin1_spanish_ci;
+
+
+-- -----------------------------------------------------
+-- Table `inmovitek`.`ht_mensaje_inmobiliaria`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `inmovitek`.`ht_mensaje_inmobiliaria` ;
+
+CREATE  TABLE IF NOT EXISTS `inmovitek`.`ht_mensaje_inmobiliaria` (
+  `id_mensaje` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `id_inmobiliaria_emisor` INT UNSIGNED NOT NULL ,
+  `id_inmobiliaria_receptor` INT UNSIGNED NOT NULL ,
+  `asunto` VARCHAR(200) NOT NULL ,
+  `mensaje` LONGTEXT NOT NULL ,
+  `fecha` DATETIME NOT NULL ,
+  `leido` TINYINT(1) NOT NULL ,
+  `fecha_leido` DATETIME NULL ,
+  `status_emisor` TINYINT(1) NOT NULL ,
+  `status_receptor` TINYINT(1) NOT NULL ,
+  PRIMARY KEY (`id_mensaje`) ,
+  INDEX `FK_INMOBILIARIA_EMISOR` (`id_inmobiliaria_emisor` ASC) ,
+  INDEX `FK_INMOBILIARIA_RECEPTOR` (`id_inmobiliaria_receptor` ASC) ,
+  INDEX `INDEX_RECEPTOR_NO_LEIDOS` (`id_inmobiliaria_receptor` ASC, `leido` ASC) ,
+  CONSTRAINT `fk_emisor`
+    FOREIGN KEY (`id_inmobiliaria_emisor` )
+    REFERENCES `inmovitek`.`ct_inmobiliaria` (`id_inmobiliaria` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_receptor`
+    FOREIGN KEY (`id_inmobiliaria_receptor` )
+    REFERENCES `inmovitek`.`ct_inmobiliaria` (`id_inmobiliaria` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+AUTO_INCREMENT = 1
+DEFAULT CHARACTER SET = latin1
+COLLATE = latin1_spanish_ci;
+
+
+-- -----------------------------------------------------
+-- Table `inmovitek`.`ht_mensaje_usuario`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `inmovitek`.`ht_mensaje_usuario` ;
+
+CREATE  TABLE IF NOT EXISTS `inmovitek`.`ht_mensaje_usuario` (
+  `id_mensaje` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `id_usuario_emisor` INT UNSIGNED NOT NULL ,
+  `id_usuario_receptor` INT UNSIGNED NOT NULL ,
+  `asunto` VARCHAR(200) NOT NULL ,
+  `mensaje` LONGTEXT NOT NULL ,
+  `fecha` DATETIME NOT NULL ,
+  `leido` TINYINT(1) NOT NULL ,
+  `fecha_leido` DATETIME NULL ,
+  `satus_emisor` TINYINT(1) NOT NULL ,
+  `status_receptor` TINYINT(1) NOT NULL ,
+  PRIMARY KEY (`id_mensaje`) ,
+  INDEX `FK_USUARIO_EMISOR` (`id_usuario_emisor` ASC) ,
+  INDEX `FK_USUARIO_RECPETOR` (`id_usuario_receptor` ASC) ,
+  CONSTRAINT `fk_emisor`
+    FOREIGN KEY (`id_usuario_emisor` )
+    REFERENCES `inmovitek`.`ct_usuario` (`id_usuario` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_receptor`
+    FOREIGN KEY (`id_usuario_receptor` )
+    REFERENCES `inmovitek`.`ct_usuario` (`id_usuario` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+AUTO_INCREMENT = 1
+DEFAULT CHARACTER SET = latin1
+COLLATE = latin1_spanish_ci;
+
+
+-- -----------------------------------------------------
+-- Table `inmovitek`.`ht_pago_renta`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `inmovitek`.`ht_pago_renta` ;
+
+CREATE  TABLE IF NOT EXISTS `inmovitek`.`ht_pago_renta` (
+  `id_pago_renta` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `id_renta` INT UNSIGNED NOT NULL ,
+  `cantidad_pagada` FLOAT NOT NULL ,
+  `fecha_pago` DATE NOT NULL ,
+  `periodo` VARCHAR(250) NOT NULL ,
+  PRIMARY KEY (`id_pago_renta`) ,
+  INDEX `FK_PAGO_ALQUILER` (`id_renta` ASC) ,
+  CONSTRAINT `fk_renta`
+    FOREIGN KEY (`id_renta` )
+    REFERENCES `inmovitek`.`ct_renta` (`id_renta` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+AUTO_INCREMENT = 1
+DEFAULT CHARACTER SET = latin1
+COLLATE = latin1_spanish_ci;
+
+
+-- -----------------------------------------------------
+-- Table `inmovitek`.`ct_permisos_usuario`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `inmovitek`.`ct_permisos_usuario` ;
+
+CREATE  TABLE IF NOT EXISTS `inmovitek`.`ct_permisos_usuario` (
+  `id_usuario` INT UNSIGNED NOT NULL ,
+  `administrar_permisos` TINYINT(1) NOT NULL ,
+  `agenda` TINYINT(1) NOT NULL ,
+  `administrar_usuarios` TINYINT(1) NOT NULL ,
+  `registrar_venta` TINYINT(1) NOT NULL ,
+  `registrar_inmueble` TINYINT(1) NOT NULL ,
+  `registrar_cliente` TINYINT(1) NOT NULL ,
+  `eliminar_inmueble` TINYINT(1) NOT NULL ,
+  `eliminar_cliente` TINYINT(1) NOT NULL ,
+  `registrar_pago_renta` TINYINT(1) NOT NULL ,
+  `mensajes_inmobiliarias` TINYINT(1) NOT NULL ,
+  `mensajes_usuarios` TINYINT(1) NOT NULL ,
+  `inmobiliaria_amiga` TINYINT(1) NOT NULL ,
+  `administrar_inmobiliaria` TINYINT(1) NOT NULL DEFAULT 0 ,
+  PRIMARY KEY (`id_usuario`) ,
+  INDEX `FK_PERMISO_USUARIO` (`id_usuario` ASC) ,
+  CONSTRAINT `fk_usuario`
+    FOREIGN KEY (`id_usuario` )
+    REFERENCES `inmovitek`.`ct_usuario` (`id_usuario` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+DEFAULT CHARACTER SET = latin1
+COLLATE = latin1_spanish_ci;
+
+
+-- -----------------------------------------------------
+-- Table `inmovitek`.`ct_telefono_cliente`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `inmovitek`.`ct_telefono_cliente` ;
+
+CREATE  TABLE IF NOT EXISTS `inmovitek`.`ct_telefono_cliente` (
+  `id_telefono_cliente` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `id_cliente` INT UNSIGNED NOT NULL ,
+  `telefono_cliente` VARCHAR(30) NOT NULL ,
+  PRIMARY KEY (`id_telefono_cliente`) ,
+  INDEX `FK_TELEFONO_CLIENTE` (`id_cliente` ASC) ,
+  CONSTRAINT `fk_cliente`
+    FOREIGN KEY (`id_cliente` )
+    REFERENCES `inmovitek`.`ct_cliente` (`id_cliente` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+AUTO_INCREMENT = 1
+DEFAULT CHARACTER SET = latin1
+COLLATE = latin1_spanish_ci;
+
+
+-- -----------------------------------------------------
+-- Table `inmovitek`.`ct_telefono_inmobiliaria`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `inmovitek`.`ct_telefono_inmobiliaria` ;
+
+CREATE  TABLE IF NOT EXISTS `inmovitek`.`ct_telefono_inmobiliaria` (
+  `id_telefono` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `id_inmobiliaria` INT UNSIGNED NOT NULL ,
+  `telefono_inmobiliaria` VARCHAR(30) NOT NULL ,
+  PRIMARY KEY (`id_telefono`) ,
+  INDEX `FK_TELEFONO_INMOBILIARIA` (`id_inmobiliaria` ASC) ,
+  CONSTRAINT `fk_inmobiliaria`
+    FOREIGN KEY (`id_inmobiliaria` )
+    REFERENCES `inmovitek`.`ct_inmobiliaria` (`id_inmobiliaria` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+AUTO_INCREMENT = 1
+DEFAULT CHARACTER SET = latin1
+COLLATE = latin1_spanish_ci;
+
+
+-- -----------------------------------------------------
+-- Table `inmovitek`.`ht_venta`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `inmovitek`.`ht_venta` ;
+
+CREATE  TABLE IF NOT EXISTS `inmovitek`.`ht_venta` (
+  `id_venta` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `id_inmueble` INT UNSIGNED NOT NULL ,
+  `id_vendedor` INT UNSIGNED NOT NULL ,
+  `id_comprador` INT UNSIGNED NOT NULL ,
+  `precio_venta` FLOAT NOT NULL ,
+  `ganancia_venta` FLOAT NULL ,
+  `fecha_venta` DATE NOT NULL ,
+  `anotaciones` LONGTEXT NULL DEFAULT NULL ,
+  PRIMARY KEY (`id_venta`) ,
+  INDEX `FK_VENTA_INMUEBLE` (`id_inmueble` ASC) ,
+  INDEX `FK_VENTA_VENDEDOR` (`id_vendedor` ASC) ,
+  INDEX `FK_VENTA_COMPRADOR` (`id_comprador` ASC) ,
+  CONSTRAINT `fk_inmueble`
+    FOREIGN KEY (`id_inmueble` )
+    REFERENCES `inmovitek`.`ct_inmueble` (`id_inmueble` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_vendedor`
+    FOREIGN KEY (`id_vendedor` )
+    REFERENCES `inmovitek`.`ct_usuario` (`id_usuario` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_comprador`
+    FOREIGN KEY (`id_comprador` )
+    REFERENCES `inmovitek`.`ct_cliente` (`id_cliente` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+AUTO_INCREMENT = 1
+DEFAULT CHARACTER SET = latin1
+COLLATE = latin1_spanish_ci;
+
+
+-- -----------------------------------------------------
+-- Table `inmovitek`.`ct_visita_virtual`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `inmovitek`.`ct_visita_virtual` ;
+
+CREATE  TABLE IF NOT EXISTS `inmovitek`.`ct_visita_virtual` (
+  `id_visitavirtual` INT UNSIGNED NOT NULL AUTO_INCREMENT ,
+  `id_inmueble` INT UNSIGNED NOT NULL ,
+  `nombre_habitacion` VARCHAR(150) NOT NULL ,
+  `url_visitavirtual` VARCHAR(200) NOT NULL ,
+  PRIMARY KEY (`id_visitavirtual`) ,
+  INDEX `FK_VISITAVIRTUAL_INMUEBLE` (`id_inmueble` ASC) ,
+  CONSTRAINT `fk_inmueble`
+    FOREIGN KEY (`id_inmueble` )
+    REFERENCES `inmovitek`.`ct_inmueble` (`id_inmueble` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+AUTO_INCREMENT = 1
+DEFAULT CHARACTER SET = latin1
+COLLATE = latin1_spanish_ci;
+
+
+-- -----------------------------------------------------
+-- Table `inmovitek`.`rl_inmobiliaria_amiga`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `inmovitek`.`rl_inmobiliaria_amiga` ;
+
+CREATE  TABLE IF NOT EXISTS `inmovitek`.`rl_inmobiliaria_amiga` (
+  `id_inmobiliaria` INT UNSIGNED NOT NULL ,
+  `id_inmobiliaria_amiga` INT UNSIGNED NOT NULL ,
+  PRIMARY KEY (`id_inmobiliaria`, `id_inmobiliaria_amiga`) ,
+  INDEX `fk_inmobiliaria_idx` (`id_inmobiliaria` ASC) ,
+  INDEX `fk_inmobiliaria_amiga_idx` (`id_inmobiliaria_amiga` ASC) ,
+  CONSTRAINT `fk_inmobiliaria`
+    FOREIGN KEY (`id_inmobiliaria` )
+    REFERENCES `inmovitek`.`ct_inmobiliaria` (`id_inmobiliaria` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_inmobiliaria_amiga`
+    FOREIGN KEY (`id_inmobiliaria_amiga` )
+    REFERENCES `inmovitek`.`ct_inmobiliaria` (`id_inmobiliaria` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+DEFAULT CHARACTER SET = latin1
+COLLATE = latin1_spanish_ci;
+
+
+-- -----------------------------------------------------
+-- Table `inmovitek`.`ct_limite_usuario`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `inmovitek`.`ct_limite_usuario` ;
+
+CREATE  TABLE IF NOT EXISTS `inmovitek`.`ct_limite_usuario` (
+  `id_usuario` INT UNSIGNED NOT NULL ,
+  `limite_inmuebles` INT NOT NULL DEFAULT 0 ,
+  `caducidad_cuenta` DATE NOT NULL ,
+  PRIMARY KEY (`id_usuario`) ,
+  INDEX `FK_LIMITE_USUARIO` (`id_usuario` ASC) ,
+  CONSTRAINT `fk_limite_usuario`
+    FOREIGN KEY (`id_usuario` )
+    REFERENCES `inmovitek`.`ct_usuario` (`id_usuario` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+DEFAULT CHARACTER SET = latin1
+COLLATE = latin1_spanish_ci;
+
+
+-- -----------------------------------------------------
+-- Table `inmovitek`.`ct_inmueble_promocionado`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `inmovitek`.`ct_inmueble_promocionado` ;
+
+CREATE  TABLE IF NOT EXISTS `inmovitek`.`ct_inmueble_promocionado` (
+  `id_inmueble` INT UNSIGNED NOT NULL ,
+  `rank` FLOAT NOT NULL DEFAULT 0 ,
+  `no_clicks` INT NOT NULL ,
+  `promocion_inicia` DATE NOT NULL ,
+  `promocion_termina` DATE NOT NULL ,
+  PRIMARY KEY (`id_inmueble`) ,
+  CONSTRAINT `FK_INMUEBLE`
+    FOREIGN KEY (`id_inmueble` )
+    REFERENCES `inmovitek`.`ct_inmueble` (`id_inmueble` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+DEFAULT CHARACTER SET = latin1
+COLLATE = latin1_spanish_ci;
+
+USE `inmovitek` ;
+
+-- -----------------------------------------------------
+-- Placeholder table for view `inmovitek`.`vw_inmobiliaria_cliente`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `inmovitek`.`vw_inmobiliaria_cliente` (`id_cliente` INT, `id_usuario` INT, `nombre` INT, `correo` INT, `telefono` INT, `horario_llamada` INT, `anotaciones` INT, `fecha_alta` INT, `id_inmobiliaria` INT);
+
+-- -----------------------------------------------------
+-- View `inmovitek`.`vw_inmobiliaria_cliente`
+-- -----------------------------------------------------
+DROP VIEW IF EXISTS `inmovitek`.`vw_inmobiliaria_cliente` ;
+DROP TABLE IF EXISTS `inmovitek`.`vw_inmobiliaria_cliente`;
+USE `inmovitek`;
+CREATE  OR REPLACE VIEW `inmovitek`.`vw_inmobiliaria_cliente` AS
+SELECT cte.*, usr.id_inmobiliaria
+FROM ct_cliente cte, ct_usuario usr 
+WHERE cte.id_usuario = usr.id_usuario
+AND id_inmobiliaria != NULL;
+;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+-- -----------------------------------------------------
+-- Data for table `inmovitek`.`ct_tipo_inmueble`
+-- -----------------------------------------------------
+START TRANSACTION;
+USE `inmovitek`;
+INSERT INTO `inmovitek`.`ct_tipo_inmueble` (`id_tipo_inmueble`, `tipo_inmueble`) VALUES (1, 'Casa sola');
+INSERT INTO `inmovitek`.`ct_tipo_inmueble` (`id_tipo_inmueble`, `tipo_inmueble`) VALUES (2, 'Departamento');
+INSERT INTO `inmovitek`.`ct_tipo_inmueble` (`id_tipo_inmueble`, `tipo_inmueble`) VALUES (3, 'Casa en condominio');
+INSERT INTO `inmovitek`.`ct_tipo_inmueble` (`id_tipo_inmueble`, `tipo_inmueble`) VALUES (4, 'Terreno');
+INSERT INTO `inmovitek`.`ct_tipo_inmueble` (`id_tipo_inmueble`, `tipo_inmueble`) VALUES (5, 'Villa');
+INSERT INTO `inmovitek`.`ct_tipo_inmueble` (`id_tipo_inmueble`, `tipo_inmueble`) VALUES (6, 'Quinta');
+INSERT INTO `inmovitek`.`ct_tipo_inmueble` (`id_tipo_inmueble`, `tipo_inmueble`) VALUES (7, 'Rancho');
+INSERT INTO `inmovitek`.`ct_tipo_inmueble` (`id_tipo_inmueble`, `tipo_inmueble`) VALUES (8, 'Local comercial');
+INSERT INTO `inmovitek`.`ct_tipo_inmueble` (`id_tipo_inmueble`, `tipo_inmueble`) VALUES (9, 'Oficina Comercial');
+INSERT INTO `inmovitek`.`ct_tipo_inmueble` (`id_tipo_inmueble`, `tipo_inmueble`) VALUES (10, 'Local en centro comercial');
+INSERT INTO `inmovitek`.`ct_tipo_inmueble` (`id_tipo_inmueble`, `tipo_inmueble`) VALUES (11, 'Huerta');
+INSERT INTO `inmovitek`.`ct_tipo_inmueble` (`id_tipo_inmueble`, `tipo_inmueble`) VALUES (12, 'Bodega comercial');
+INSERT INTO `inmovitek`.`ct_tipo_inmueble` (`id_tipo_inmueble`, `tipo_inmueble`) VALUES (13, 'Oficina industrial');
+
+COMMIT;
+
+-- -----------------------------------------------------
+-- Data for table `inmovitek`.`ct_estado`
+-- -----------------------------------------------------
+START TRANSACTION;
+USE `inmovitek`;
+INSERT INTO `inmovitek`.`ct_estado` (`id_estado`, `nombre`) VALUES (1, ' Aguascalientes');
+INSERT INTO `inmovitek`.`ct_estado` (`id_estado`, `nombre`) VALUES (2, ' Baja California');
+INSERT INTO `inmovitek`.`ct_estado` (`id_estado`, `nombre`) VALUES (3, ' Baja California Sur');
+INSERT INTO `inmovitek`.`ct_estado` (`id_estado`, `nombre`) VALUES (4, ' Campeche');
+INSERT INTO `inmovitek`.`ct_estado` (`id_estado`, `nombre`) VALUES (5, ' Coahuila de Zaragoza');
+INSERT INTO `inmovitek`.`ct_estado` (`id_estado`, `nombre`) VALUES (6, ' Colima');
+INSERT INTO `inmovitek`.`ct_estado` (`id_estado`, `nombre`) VALUES (7, ' Chiapas');
+INSERT INTO `inmovitek`.`ct_estado` (`id_estado`, `nombre`) VALUES (8, ' Chihuahua');
+INSERT INTO `inmovitek`.`ct_estado` (`id_estado`, `nombre`) VALUES (9, ' Distrito Federal');
+INSERT INTO `inmovitek`.`ct_estado` (`id_estado`, `nombre`) VALUES (10, ' Durango');
+INSERT INTO `inmovitek`.`ct_estado` (`id_estado`, `nombre`) VALUES (11, ' Guanajuato');
+INSERT INTO `inmovitek`.`ct_estado` (`id_estado`, `nombre`) VALUES (12, ' Guerrero');
+INSERT INTO `inmovitek`.`ct_estado` (`id_estado`, `nombre`) VALUES (13, ' Hidalgo');
+INSERT INTO `inmovitek`.`ct_estado` (`id_estado`, `nombre`) VALUES (14, ' Jalisco');
+INSERT INTO `inmovitek`.`ct_estado` (`id_estado`, `nombre`) VALUES (15, ' Estado de M&eacute;xico');
+INSERT INTO `inmovitek`.`ct_estado` (`id_estado`, `nombre`) VALUES (16, ' Michoac&aacute;n de Ocampo');
+INSERT INTO `inmovitek`.`ct_estado` (`id_estado`, `nombre`) VALUES (17, ' Morelos');
+INSERT INTO `inmovitek`.`ct_estado` (`id_estado`, `nombre`) VALUES (18, ' Nayarit');
+INSERT INTO `inmovitek`.`ct_estado` (`id_estado`, `nombre`) VALUES (19, ' Nuevo Le&oacute;n');
+INSERT INTO `inmovitek`.`ct_estado` (`id_estado`, `nombre`) VALUES (20, ' Oaxaca');
+INSERT INTO `inmovitek`.`ct_estado` (`id_estado`, `nombre`) VALUES (21, ' Puebla');
+INSERT INTO `inmovitek`.`ct_estado` (`id_estado`, `nombre`) VALUES (22, ' Quer&eacute;taro');
+INSERT INTO `inmovitek`.`ct_estado` (`id_estado`, `nombre`) VALUES (23, ' Quintana Roo');
+INSERT INTO `inmovitek`.`ct_estado` (`id_estado`, `nombre`) VALUES (24, ' San Luis Potos&iacute;');
+INSERT INTO `inmovitek`.`ct_estado` (`id_estado`, `nombre`) VALUES (25, ' Sinaloa');
+INSERT INTO `inmovitek`.`ct_estado` (`id_estado`, `nombre`) VALUES (26, ' Sonora');
+INSERT INTO `inmovitek`.`ct_estado` (`id_estado`, `nombre`) VALUES (27, ' Tabasco');
+INSERT INTO `inmovitek`.`ct_estado` (`id_estado`, `nombre`) VALUES (28, ' Tamaulipas');
+INSERT INTO `inmovitek`.`ct_estado` (`id_estado`, `nombre`) VALUES (29, ' Tlaxcala');
+INSERT INTO `inmovitek`.`ct_estado` (`id_estado`, `nombre`) VALUES (30, ' Veracruz de Ignacio de la Llave');
+INSERT INTO `inmovitek`.`ct_estado` (`id_estado`, `nombre`) VALUES (31, ' Yucat&aacute;n');
+INSERT INTO `inmovitek`.`ct_estado` (`id_estado`, `nombre`) VALUES (32, ' Zacatecas');
+
+COMMIT;

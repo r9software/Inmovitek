@@ -1,0 +1,128 @@
+<?php
+$usuario = $data['usuario'];
+$permisos = $data['permisos'];
+?>
+<div class="header_top">
+    <div class="logo">
+        <a href="<?php echo Doo::conf()->APP_URL ?>"><img src="<?php echo Doo::conf()->APP_URL; ?>global/images/logo.png" alt=""></a>
+        <h1><?php echo Doo::conf()->APP_NAME; ?></h1>
+    </div>
+    <div class="topmenu">
+        <ul class="dropdown">
+            <li class="menu-item-home current-menu-item">
+                <a href="<?php echo Doo::conf()->APP_URL ?>CRM/home"><span>Inicio</span></a>
+            </li>
+            <li>
+                <a href="<?php echo Doo::conf()->APP_URL ?>CRM/perfil"><span>Perfil</span></a>
+                <ul>
+                    <li><a href="<?php echo Doo::conf()->APP_URL ?>CRM/perfil">Ver mi perfil</a></li>
+                    <li><a href="<?php echo Doo::conf()->APP_URL ?>CRM/perfil/edit">Editar mi perfil</a></li>
+                    <li><a href="<?php echo Doo::conf()->APP_URL ?>CRM/perfil/changePass">Cambiar mi contrase&ntilde;a</a></li>
+                </ul>
+            </li>
+            <?php
+            //Verificamos si el usuario pertenece a una inmobiliaria
+            if ($usuario->id_inmobiliaria != null && $usuario->id_inmobiliaria != "") {
+                Doo::loadModel('inmobiliaria');
+                $inmo = new inmobiliaria();
+                $inmo->id_inmobiliaria = $usuario->id_inmobiliaria;
+                $inmo = $inmo->find(array('limit'=>1));
+                if ($permisos->mensajes_inmobiliarias || $permisos->mensajes_usuarios) {
+                    ?>
+                    <li>
+                        <a href=""><span>Mensajes</span></a>
+                        <ul>
+                            <?
+                            if ($permisos->mensajes_inmobiliarias) {
+                                ?>
+                                <li><a href="<?php echo Doo::conf()->APP_URL ?>CRM/inmobiliaria/mensajes">Mensajes a Inmobiliarias</a></li>
+                                <?
+                            }
+                            if ($permisos->mensajes_usuarios) {
+                                ?>
+                                <li><a href="<?php echo Doo::conf()->APP_URL ?>CRM/usuario/mensajes">Mensajes a Usuarios</a></li>
+                                <?
+                            }
+                            ?>
+
+                        </ul>			
+                    </li>																													
+        <?
+    }
+    ?>
+                <li>
+                    <a href="<?php echo Doo::conf()->APP_URL ?>CRM/inmobiliaria"><span>Inmobiliaria</span></a>
+                    <ul>
+                        <?php 
+                            if($inmo->identificador){
+                                echo '<li><a href="'. Doo::conf()->APP_URL .$inmo->identificador .'">Ver perfil de la Inmobiliaria</a></li>';
+                            }
+                        ?>
+                        
+                        <li><a href="<?php echo Doo::conf()->APP_URL ?>CRM/inmobiliaria/editar">Editar Inmobiliaria</a></li>
+    <?php
+    if ($permisos->administrar_usuarios) {
+        ?>
+                            <li><a href="<?php echo Doo::conf()->APP_URL ?>CRM/inmobiliaria/usuarios/nuevo">Registrar nuevo asesor de ventas</a></li>
+                            <li><a href="<?php echo Doo::conf()->APP_URL ?>CRM/inmobiliaria/usuarios/administrar">Administrar asesores de venta</a></li>
+                            <?php
+                        }//Fin if administrar usuario
+                        ?>
+                    </ul>
+                </li>
+                        <?php
+                    }
+                    ?>
+            <li>
+                <a href="<?php echo Doo::conf()->APP_URL ?>CRM/inmuebles"><span>Propiedades</span></a>
+                <ul>
+                    <li><a href="<?php echo Doo::conf()->APP_URL ?>CRM/inmuebles/nuevo">Registrar una nueva propiedad</a></li>
+                    <!--<li><a href="#">Buscar una propiedad</a></li>-->
+                    <li><a href="<?php echo Doo::conf()->APP_URL ?>CRM/inmuebles/listar">Listar mis propiedades</a></li>
+                    <li><a href="<?php echo Doo::conf()->APP_URL ?>CRM/inmuebles/listar/vendidos">Ver propiedades vendidas</a></li>
+                    <li><a href="<?php echo Doo::conf()->APP_URL ?>CRM/inmuebles/listar/rentados">Ver propiedades rentadas</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="<?php echo Doo::conf()->APP_URL ?>CRM/clientes"><span>Clientes</span></a>
+                <ul>
+<?php
+if ($permisos->registrar_cliente) {
+    ?>
+                        <li><a href="<?php echo Doo::conf()->APP_URL ?>CRM/clientes/nuevo">Dar de alta un cliente</a></li>
+                        <?php
+                    }//Fin if registrar
+
+                    if ($permisos->eliminar_cliente) {
+                        ?>
+    <!--					<li><a href="<?php echo Doo::conf()->APP_URL ?>CRM/clientes/buscar">Buscar un cliente</a></li>-->
+                        <?php
+                    }//Fin if eliminar cliente
+                    ?>
+                    <li><a href="<?php echo Doo::conf()->APP_URL ?>CRM/clientes/listar">Listar clientes</a></li>
+                    <!--<li><a href="#">Ver clientes que buscan inmueble</a></li>-->
+                </ul>
+            </li>
+
+<?php
+if ($permisos->agenda) {
+    ?>
+                <li>
+                    <a href="<?php echo Doo::conf()->APP_URL ?>CRM/agenda/index"><span>Agenda</span></a>
+                    <ul>
+                        <li><a href="<?php echo Doo::conf()->APP_URL ?>CRM/agenda/hoy">Agenda del d&iacute;a</a></li>
+                        <li><a  href="<?php echo Doo::conf()->APP_URL ?>CRM/agenda/nueva">Registrar nuevo evento</a></li>
+                        <li><a href="<?php echo Doo::conf()->APP_URL ?>CRM/agenda/anteriores">Ver eventos pasados</a></li>
+                    </ul>
+                </li>
+    <?php
+}//Fin if agenda
+?>
+            <li>
+                <a href="<?php echo Doo::conf()->APP_URL ?>CRM/logout"><span>Salir</span></a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="clear"></div>
+</div>
